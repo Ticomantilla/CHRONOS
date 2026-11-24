@@ -18,21 +18,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Node.js
+      - name: Set up Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
-      - name: Install Cordova & Build App
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create Project & Build APK
         run: |
-          npm install -g cordova
+          npm install -g cordova@12.0.0
           cordova create app com.cyberdin.chronos CHRONOS
           cd app
           rm -rf www/*
           curl -L -o www.zip "https://files.catbox.moe/dbgnfh.zip"
           unzip www.zip -d www/
-          cordova platform add android@12.0.1
-          cordova plugin add cordova-plugin-background-mode || true
+          cordova platform add android@12.0.0 --save
           cordova build android --debug
 
       - name: Upload APK

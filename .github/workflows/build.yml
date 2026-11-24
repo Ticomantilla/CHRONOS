@@ -30,12 +30,20 @@ jobs:
           unzip -o dist.zip -d www/
           npx cap add android
 
-          # Inyectar permisos nativos de alarma en AndroidManifest.xml
+          # Copiar icono de la app a los recursos nativos de Android para que aparezca en el escritorio
+          RES="android/app/src/main/res"
+          for dir in $RES/mipmap-*; do
+            cp www/pwa-192x192.png $dir/ic_launcher.png || true
+            cp www/pwa-192x192.png $dir/ic_launcher_round.png || true
+            cp www/pwa-192x192.png $dir/ic_launcher_foreground.png || true
+          done
+
+          # Inyectar permisos de alarma nativa y soporte para pantalla apagada
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<application/i \    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />' $MANIFEST
 
-          # Asegurar que sea visible como Launcher principal en el escritorio
-          sed -i 's/<activity /<activity android:exported="true" /' $MANIFEST
+          # Asegurar categoria DEFAULT y LAUNCHER para Android Go / Redmi
+          sed -i '/<category android:name="android.intent.category.LAUNCHER" \/>/a \                <category android:name="android.intent.category.DEFAULT" \/>' $MANIFEST
 
           npx cap sync android
           cd android
@@ -45,5 +53,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CHRONOS-v2.6-BackgroundAlarm
+          name: CHRONOS-v2.7-Redmi-Desktop
           path: chronos-app/android/app/build/outputs/apk/debug/*.apk

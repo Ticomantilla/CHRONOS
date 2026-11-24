@@ -30,20 +30,12 @@ jobs:
           unzip -o dist.zip -d www/
           npx cap add android
 
-          # Copiar icono de la app a los recursos nativos de Android para que aparezca en el escritorio
-          RES="android/app/src/main/res"
-          for dir in $RES/mipmap-*; do
-            cp www/pwa-192x192.png $dir/ic_launcher.png || true
-            cp www/pwa-192x192.png $dir/ic_launcher_round.png || true
-            cp www/pwa-192x192.png $dir/ic_launcher_foreground.png || true
-          done
+          # Reemplazar iconos oficiales por el icono de CHRONOS
+          find android/app/src/main/res/ -name "ic_launcher*.png" -exec cp www/pwa-192x192.png {} \;
 
-          # Inyectar permisos de alarma nativa y soporte para pantalla apagada
+          # Permisos de sistema para alarmas exactas y pantalla bloqueada
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<application/i \    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />' $MANIFEST
-
-          # Asegurar categoria DEFAULT y LAUNCHER para Android Go / Redmi
-          sed -i '/<category android:name="android.intent.category.LAUNCHER" \/>/a \                <category android:name="android.intent.category.DEFAULT" \/>' $MANIFEST
 
           npx cap sync android
           cd android

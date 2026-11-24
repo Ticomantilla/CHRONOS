@@ -18,9 +18,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,7 +29,7 @@ jobs:
           cordova create app com.cyberdin.chronos CHRONOS
           cd app
           rm -rf www/*
-          curl -L -o www.zip "https://files.catbox.moe/kztey9.zip"
+          curl -L -o www.zip "https://files.catbox.moe/dbgnfh.zip"
           unzip www.zip -d www/
           cordova platform add android@12.0.1
           cordova plugin add cordova-plugin-background-mode || true

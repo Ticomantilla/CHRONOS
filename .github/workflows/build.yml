@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build Native Android APK with Persistent Alarm Sound
+      - name: Build Native Android APK with Crystal Clear Alarm
         run: |
           npm install -g @capacitor/cli@6 @capacitor/core@6
           mkdir -p chronos-app && cd chronos-app
@@ -26,11 +26,11 @@ jobs:
           npm install @capacitor/core@6 @capacitor/android@6 @capacitor/local-notifications@6
           npx cap init CHRONOS com.cyberdin.chronos --web-dir www
           mkdir -p www
-          curl -sL "https://files.catbox.moe/w4npom.zip" -o dist.zip
+          curl -sL "https://files.catbox.moe/pf5bre.zip" -o dist.zip
           unzip -o dist.zip -d www/
           npx cap add android
 
-          # Copiar el sonido de alarma a la carpeta nativa res/raw de Android
+          # Copiar el sonido nítido a la carpeta res/raw nativa
           mkdir -p android/app/src/main/res/raw
           cp www/alarm_sound.wav android/app/src/main/res/raw/alarm_sound.wav
 
@@ -49,5 +49,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CHRONOS-v3.2-PersistentAlarm
+          name: CHRONOS-v3.3-CleanSound
           path: chronos-app/android/app/build/outputs/apk/debug/*.apk

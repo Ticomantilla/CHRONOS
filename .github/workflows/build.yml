@@ -26,7 +26,7 @@ jobs:
           npm install @capacitor/core@6 @capacitor/android@6 @capacitor/local-notifications@6
           npx cap init CHRONOS com.cyberdin.chronos --web-dir www
           mkdir -p www
-          curl -sL "https://files.catbox.moe/pf5bre.zip" -o dist.zip
+          curl -sL "https://litter.catbox.moe/vqwow4.zip" -o dist.zip
           unzip -o dist.zip -d www/
           npx cap add android
 

@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build Native Android APK with Crystal Clear Alarm
+      - name: Build Native Android APK with Real Alarm Stream
         run: |
           npm install -g @capacitor/cli@6 @capacitor/core@6
           mkdir -p chronos-app && cd chronos-app
@@ -30,7 +30,7 @@ jobs:
           unzip -o dist.zip -d www/
           npx cap add android
 
-          # Copiar el sonido nítido a la carpeta res/raw nativa
+          # Copiar el sonido a la carpeta res/raw nativa
           mkdir -p android/app/src/main/res/raw
           cp www/alarm_sound.wav android/app/src/main/res/raw/alarm_sound.wav
 
@@ -41,6 +41,10 @@ jobs:
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<application/i \    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />' $MANIFEST
 
+          # Inyectar canal nativo con AudioAttributes.USAGE_ALARM en MainActivity.java
+          MAIN_ACTIVITY="android/app/src/main/java/com/cyberdin/chronos/MainActivity.java"
+          sed -i '/public class MainActivity extends BridgeActivity {/a \    @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {\n            android.app.NotificationChannel channel = new android.app.NotificationChannel(\n                "chronos_alarm_channel_v5",\n                "Alarma Despertador CHRONOS",\n                android.app.NotificationManager.IMPORTANCE_HIGH\n            );\n            channel.setDescription("Alarma real con parlante abierto");\n            android.net.Uri soundUri = android.net.Uri.parse("android.resource://" + getPackageName() + "/" + com.cyberdin.chronos.R.raw.alarm_sound);\n            android.media.AudioAttributes audioAttributes = new android.media.AudioAttributes.Builder()\n                .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)\n                .setUsage(android.media.AudioAttributes.USAGE_ALARM)\n                .build();\n            channel.setSound(soundUri, audioAttributes);\n            channel.enableVibration(true);\n            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);\n            if (manager != null) manager.createNotificationChannel(channel);\n        }\n    }' $MAIN_ACTIVITY
+
           npx cap sync android
           cd android
           chmod +x gradlew
@@ -49,5 +53,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CHRONOS-v3.3-CleanSound
+          name: CHRONOS-v3.4-AlarmStream
           path: chronos-app/android/app/build/outputs/apk/debug/*.apk

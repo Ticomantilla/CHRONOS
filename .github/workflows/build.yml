@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build Native Android APK with Crystal Clear Alarm
+      - name: Build Native Android APK with Continuous Alarm
         run: |
           npm install -g @capacitor/cli@6 @capacitor/core@6
           mkdir -p chronos-app && cd chronos-app
@@ -26,18 +26,18 @@ jobs:
           npm install @capacitor/core@6 @capacitor/android@6 @capacitor/local-notifications@6
           npx cap init CHRONOS com.cyberdin.chronos --web-dir www
           mkdir -p www
-          curl -sL "https://litter.catbox.moe/czjbkn.zip" -o dist.zip
+          curl -sL "https://files.catbox.moe/z18v6n.zip" -o dist.zip
           unzip -o dist.zip -d www/
           npx cap add android
 
-          # Copiar el sonido nítido a la carpeta res/raw nativa
+          # Copiar el sonido nativo de sirena a res/raw
           mkdir -p android/app/src/main/res/raw
           cp www/alarm_sound.wav android/app/src/main/res/raw/alarm_sound.wav
 
-          # Reemplazar iconos oficiales por el icono de CHRONOS
+          # Reemplazar iconos por el icono oficial de CHRONOS
           find android/app/src/main/res/ -name "ic_launcher*.png" -exec cp www/pwa-192x192.png {} \;
 
-          # Permisos de sistema para alarmas exactas y pantalla bloqueada
+          # Permisos para pantalla bloqueada y alarmas exactas
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           sed -i '/<application/i \    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />' $MANIFEST
 
@@ -49,5 +49,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CHRONOS-v3.5-CleanAlarm
+          name: CHRONOS-v3.7-AlarmaIninterrumpida
           path: chronos-app/android/app/build/outputs/apk/debug/*.apk
